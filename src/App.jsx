@@ -1,4 +1,5 @@
 import React, {useEffect, useState} from "react";
+import firebase from "firebase/compat/app";
 
 import db from "./firebase";
 import Todo from "./Todo";
@@ -8,13 +9,23 @@ function App() {
   const [todos, setTodos] = useState([]);
 
   useEffect(() => {
-    db.collection("todos").onSnapshot((snapshot) => {
-      setTodos(snapshot.docs.map((doc) => doc.data().todo));
-    });
+    db.collection("todos")
+      .orderBy("timestamp", "desc")
+      .onSnapshot((snapshot) => {
+        setTodos(
+          snapshot.docs.map((doc) => ({id: doc.id, todo: doc.data().todo}))
+        );
+      });
   }, [input]);
 
   const addTodo = (e) => {
     e.preventDefault();
+
+    db.collection("todos").add({
+      todo: input,
+      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+    });
+
     setTodos([...todos, input]);
     setInput("");
   };
@@ -30,7 +41,7 @@ function App() {
       </form>
       <ul>
         {todos.map((todo) => (
-          <Todo todo={todo} />
+          <Todo todo={todo} key={todo.id} />
         ))}
       </ul>
     </div>
