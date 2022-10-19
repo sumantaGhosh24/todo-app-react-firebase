@@ -1,15 +1,24 @@
 import firebase from "firebase/compat/app";
-import "firebase/compat/firestore";
+import {getFirestore} from "firebase/firestore";
 
-const firebaseApp = firebase.initializeApp({
-  apiKey: "AIzaSyDcTgj2JRJHYkBE3C_m1QDug3w6efMu9zw",
-  authDomain: "todo-app-react-37d3c.firebaseapp.com",
-  projectId: "todo-app-react-37d3c",
-  storageBucket: "todo-app-react-37d3c.appspot.com",
-  messagingSenderId: "734996901306",
-  appId: "1:734996901306:web:79e5d764e092eb27000183",
-});
+import {
+  API_KEY,
+  APP_ID,
+  AUTH_DOMAIN,
+  MESSAGING_SENDER_ID,
+  PROJECT_ID,
+  STORAGE_BUCKET,
+} from "./config";
 
-const db = firebaseApp.firestore();
+const firebaseConfig = {
+  apiKey: API_KEY,
+  authDomain: AUTH_DOMAIN,
+  projectId: PROJECT_ID,
+  storageBucket: STORAGE_BUCKET,
+  messagingSenderId: MESSAGING_SENDER_ID,
+  appId: APP_ID,
+};
 
-export default db;
+const app = firebase.initializeApp(firebaseConfig);
+
+export const db = getFirestore(app);

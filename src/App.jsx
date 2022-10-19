@@ -1,7 +1,13 @@
 import React, {useEffect, useState} from "react";
-import firebase from "firebase/compat/app";
+import {
+  addDoc,
+  collection,
+  onSnapshot,
+  serverTimestamp,
+} from "firebase/firestore";
 
-import db from "./firebase";
+import "./App.css";
+import {db} from "./firebase";
 import Todo from "./Todo";
 
 function App() {
@@ -9,37 +15,55 @@ function App() {
   const [todos, setTodos] = useState([]);
 
   useEffect(() => {
-    db.collection("todos")
-      .orderBy("timestamp", "desc")
-      .onSnapshot((snapshot) => {
-        setTodos(
-          snapshot.docs.map((doc) => ({id: doc.id, todo: doc.data().todo}))
-        );
-      });
+    const unsubscribe = onSnapshot(
+      collection(db, "todos"),
+      (snapshot) => {
+        let list = [];
+        snapshot.docs.forEach((doc) => {
+          list.push({id: doc.id, ...doc.data()});
+        });
+        setTodos(list);
+      },
+      (error) => {
+        console.log(error);
+      }
+    );
+    return () => {
+      unsubscribe();
+    };
   }, [input]);
 
-  const addTodo = (e) => {
+  const addTodo = async (e) => {
     e.preventDefault();
-
-    db.collection("todos").add({
-      todo: input,
-      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-    });
-
-    setTodos([...todos, input]);
-    setInput("");
+    try {
+      await addDoc(collection(db, "todos"), {
+        todo: input,
+        timestamp: serverTimestamp(),
+      });
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
-    <div className="App">
-      <h1>hello world</h1>
-      <form>
-        <input value={input} onChange={(e) => setInput(e.target.value)} />
-        <button type="submit" onClick={addTodo} disabled={!input}>
+    <div className="todo">
+      <h1 className="todo__heading">Basic ToDo List Application</h1>
+      <form className="todo__addForm">
+        <input
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          className="todo__addInput"
+        />
+        <button
+          type="submit"
+          onClick={addTodo}
+          disabled={!input}
+          className="todo__addButton"
+        >
           Add Todo
         </button>
       </form>
-      <ul>
+      <ul className="todo__list">
         {todos.map((todo) => (
           <Todo todo={todo} key={todo.id} />
         ))}
