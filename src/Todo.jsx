@@ -56,7 +56,7 @@ const Todo = (props) => {
         <div>
           <p className="todo__todo">{props.todo.todo}</p>
           <p className="todo__timestamp">
-            {props.todo.timestamp.toDate().toDateString()}
+            {props?.todo?.timestamp?.toDate().toDateString()}
           </p>
         </div>
         <div>

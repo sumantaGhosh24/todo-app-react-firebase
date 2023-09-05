@@ -12,6 +12,7 @@ import Todo from "./Todo";
 
 function App() {
   const [input, setInput] = useState("");
+  const [error, setError] = useState(null);
   const [todos, setTodos] = useState([]);
 
   useEffect(() => {
@@ -40,14 +41,16 @@ function App() {
         todo: input,
         timestamp: serverTimestamp(),
       });
+      setInput("");
     } catch (error) {
-      console.log(error);
+      setError(error);
     }
   };
 
   return (
     <div className="todo">
       <h1 className="todo__heading">Basic ToDo List Application</h1>
+      {error && <p className="todo__subHeading">{error}</p>}
       <form className="todo__addForm">
         <input
           value={input}

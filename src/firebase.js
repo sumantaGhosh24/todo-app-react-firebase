@@ -1,5 +1,5 @@
 import firebase from "firebase/compat/app";
-import {getFirestore} from "firebase/firestore";
+import {connectFirestoreEmulator, getFirestore} from "firebase/firestore";
 
 import {
   API_KEY,
@@ -22,3 +22,7 @@ const firebaseConfig = {
 const app = firebase.initializeApp(firebaseConfig);
 
 export const db = getFirestore(app);
+
+if (window.location.hostname == "localhost") {
+  connectFirestoreEmulator(db, "localhost", 8080);
+}
